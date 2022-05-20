@@ -1,89 +1,29 @@
 import pygame
 from pygame.locals import *
-import numpy as np
+from math import *
 pygame.init()
-sc = pygame.display.set_mode((800,800))
-fpsClock = pygame.time.Clock()
-r = 300
-d = r * 2 + 1
-nd = d * d
-pix = np.zeros(nd)
-pic = pix.reshape(d, d)
+sc = pygame.display.set_mode((800,600))
 co = (255, 255, 100)
-lx , ly, lz = (1, -1, 0.5)
-x0, y0, = 400, 400
-i = np.zeros(nd, dtype = np.int)
-ixy = i.reshape(d, d)
-
-j = np.zeros(nd, dtype = np.int)
-jxy = j.reshape(d, d)
-
-ii = np.arange(-r,1)
-jj = ii[:,np.newaxis]
-ixy[:r+1, :] = jj[:]
-
-ii = np.arange(1, r+1)
-jj = ii[:,np.newaxis]
-ixy[r+1:, :] = jj[:]
-
-ii = np.arange(-r,1)
-jj = ii[np.newaxis,:]
-jxy[:, :r+1] = jj[:]
-
-ii = np.arange(1, r+1)
-jj = ii[np.newaxis,:]
-jxy[:, r+1:] = jj[:]
-
-kxy = (np.ones(nd).reshape(d,d) * r*r- ixy * ixy - jxy * jxy)
-ixy[kxy<=0] = 0
-jxy[kxy<=0] = 0
-kxy[kxy<=0] = 0
-kxy = np.sqrt(kxy) 
-# ~ print (ixy)
-# ~ print (jxy)
-# ~ print (kxy)
-rr1= np.zeros_like(kxy)
-rr1[:] = np.random.randint(100)
-rr2= np.zeros_like(kxy)
-rr2[:] = np.random.randint(100)
-
-def sphere():
-	
-	lz = np.cos(theta)
-	ls = np.sin(theta)
-	lx = ls * np.cos(phi)
-	ly = ls * np.sin(phi)
-
-	
-	ccxy = (255 * (kxy * lz + ixy * lx + jxy * ly ) / (r)).astype(int)
-	ccxy[ccxy<0] = 0
-	ccxy[ccxy>255] = 255
-	# ~ print (rr)
-	# ~ ccxy[rr1<50]//=2
-	ccxy[rr2<20]//=4
-	# ~ print (ccxy)
-	st = np.zeros((d, d, 3), dtype = np.int32)
-	st[:,:,0] = ccxy[:,:]
-	# ~ st[:,:,0][st[:,:,0] < 10] = 20
-	st[:,:,1] = ccxy[:,:]
-	st[:,:,2] = ccxy[:,:]
-	su = pygame.surface.Surface((d,d))
-	pygame.surfarray.blit_array(su, st)
-	sc.blit(su, (x0 - r,y0 - r))
-
-theta, phi = (0, 0)
-vtheta = 0
-vphi = 0
-
-sphere()
+l = (1, -1, -1)
+ll = sqrt ( l[0] * l[0] + l[1] * l[1] + l[2] * l[2])
+def sphere(x, y, r):
+	for i in range(-r, r):
+		for j in range(-r, r):
+			if i * i + j * j < r * r :
+				k = sqrt(r * r - i * i - j * j)
+				c = l[0] * i + l[1] * j + l[2] * k
+				if c > 0:
+					d = c / (r * ll)
+					dr = int (d * co[0])
+					dg = int (d * co[1])
+					db = int (d * co[2])
+					cc = (dr, dg, db)
+					sc.set_at((x + i,y + j), cc)
+		
+sphere(400, 300, 200)
+pygame.display.update()
 cont = True
-fpsClock.tick(30)
 while cont:
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == pygame.K_ESCAPE or event.key == K_q:
-                cont = False
-
-        if event.type == QUIT:
-            cont = False
-            pygame.quit()
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			cont = False

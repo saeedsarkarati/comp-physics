@@ -55,6 +55,12 @@ sq[0].red=255
 sq[0].green=128
 sq[0].blue=0
 '''
+sq[1].x = 260
+sq[2].y = 350
+sq[2].x = 210
+sq[3].x = 290
+sq[3].y = 320
+sq[3].green = 255
 for i in (sq):
     i.draw()
 
